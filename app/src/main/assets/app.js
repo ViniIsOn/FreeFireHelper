@@ -40,10 +40,10 @@
     {id:'e2',cat:'EQUIPE',title:'Jogue no ritmo do time',desc:'Evite se separar sem combinar. Reúna informações com seus colegas e façam escolhas coletivas.',voice:'Procure manter a equipe coordenada. Combine seu próximo movimento com os colegas.'}
   ];
   const drills = [
-    {id:'d1',title:'Observação de mapa',duration:90,focus:'MAPA E PLANEJAMENTO',desc:'Durante uma partida de treino, consulte o mapa nos momentos tranquilos e pense no próximo deslocamento.',instruction:'Treine observar o minimapa em momentos seguros e planejar uma rota alternativa.',voice:'Treino de observação. Procure manter consciência do mapa e planejar sua próxima rota.'},
-    {id:'d2',title:'Cobertura e movimento',duration:120,focus:'POSICIONAMENTO',desc:'Pratique se deslocar por caminhos que ofereçam mais proteção, sem correr por impulso em áreas expostas.',instruction:'Observe quais trajetos parecem mais protegidos. Priorize movimento consciente e seguro.',voice:'Treino de posicionamento. Observe o ambiente e planeje movimentos com cobertura.'},
+    {id:'d1',title:'Observação de mapa',duration:90,focus:'MAPA E PLANEJAMENTO',desc:'Antes de jogar, imagine três momentos tranquilos para consultar o mapa e planejar seu deslocamento.',instruction:'Treine observar o minimapa em momentos seguros e planejar uma rota alternativa.',voice:'Treino de observação. Procure manter consciência do mapa e planejar sua próxima rota.'},
+    {id:'d2',title:'Cobertura e movimento',duration:120,focus:'POSICIONAMENTO',desc:'Visualize caminhos com proteção e pense em alternativas para não se deslocar no impulso.',instruction:'Observe quais trajetos parecem mais protegidos. Priorize movimento consciente e seguro.',voice:'Treino de posicionamento. Observe o ambiente e planeje movimentos com cobertura.'},
     {id:'d3',title:'Decisões calmas',duration:60,focus:'CONTROLE EMOCIONAL',desc:'Antes de uma decisão importante, pare mentalmente, observe e formule um plano curto.',instruction:'Lembre-se: observar, decidir e agir com calma. Um pequeno erro não define sua partida.',voice:'Treino de calma. Observe primeiro e escolha uma ação de cada vez.'},
-    {id:'d4',title:'Comunicação em equipe',duration:120,focus:'TRABALHO EM EQUIPE',desc:'Se estiver com amigos, treine avisar sobre sua rota e combinar deslocamentos sem confusão.',instruction:'Explique aos colegas seu próximo deslocamento e ouça o plano deles.',voice:'Treino de equipe. Faça combinações simples e comunique seus movimentos com clareza.'}
+    {id:'d4',title:'Comunicação em equipe',duration:120,focus:'TRABALHO EM EQUIPE',desc:'Ensaie em voz alta mensagens curtas para combinar deslocamentos com seus colegas.',instruction:'Explique aos colegas seu próximo deslocamento e ouça o plano deles.',voice:'Treino de equipe. Faça combinações simples e comunique seus movimentos com clareza.'}
   ];
 
   function speak(text) {
@@ -75,7 +75,7 @@
       : '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 9v6h4l5 4V5L8 9H4zM17 9l5 6m0-6-5 6"/></svg>';
   }
   function todayTip() {return dailyTips[Math.floor(Date.now()/86400000)%dailyTips.length];}
-  function topRate(){return matches.length?Math.round(100*matches.filter(m=>m.rank<=10).length/matches.length):0;}
+  function topRate(){const br=matches.filter(m=>m.mode==='Battle Royale');return br.length?Math.round(100*br.filter(m=>m.rank<=10).length/br.length):0;}
   function avg(key,round=1) {if(!matches.length)return null;const n=matches.reduce((a,m)=>a+Number(m[key]||0),0)/matches.length;return Number(n.toFixed(round));}
   function renderHome(){
     $('home-matches').textContent=String(matches.length);
@@ -116,7 +116,7 @@
     const mode=$('match-mode').value;
     const kills=Number($('match-kills').value),rank=Number($('match-rank').value),minutes=Number($('match-minutes').value);
     const outcome=$('match-outcome').value;
-    if(!Number.isFinite(kills)||!Number.isInteger(kills)||kills<0||kills>99||!Number.isInteger(rank)||rank<1||rank>50||!Number.isFinite(minutes)||minutes<0||minutes>60){toast('Confira os números informados.');return;}
+    if(!Number.isFinite(kills)||!Number.isInteger(kills)||kills<0||kills>99||!Number.isInteger(rank)||rank<1||rank>(mode==='Contra Squad'?2:50)||!Number.isFinite(minutes)||minutes<0||minutes>60){toast('Confira os números informados.');return;}
     const match={id:Date.now(),mode,kills,rank,minutes,outcome,date:new Date().toISOString()};
     matches.push(match);matches=matches.slice(-250);store.write('matches',matches);
     const suggestions=analyzeMatch(match);
@@ -162,8 +162,9 @@
     $('stat-time').textContent=count?avg('minutes')+'m':'—';
     $('stat-kills').textContent=String(matches.reduce((a,m)=>a+Number(m.kills||0),0));
     const chart=$('stats-chart');chart.replaceChildren();
-    if(!count){chart.innerHTML='<div class="empty-state" style="width:100%;align-self:center">Registre uma partida para visualizar o gráfico.</div>';}
-    else matches.slice(-7).forEach(m=>{
+    const rankedMatches=matches.filter(m=>m.mode==='Battle Royale');
+    if(!rankedMatches.length){chart.innerHTML='<div class="empty-state" style="width:100%;align-self:center">Registre uma partida para visualizar o gráfico.</div>';}
+    else rankedMatches.slice(-7).forEach(m=>{
       const wrap=document.createElement('div');wrap.className='bar-wrap';
       const bar=document.createElement('div');bar.className='bar';
       bar.style.height=Math.max(7,Math.min(100,(51-m.rank)/50*100))+'%';
@@ -227,6 +228,13 @@
   $('voice-switch').addEventListener('click',()=>{voiceEnabled=!voiceEnabled;store.write('voice',voiceEnabled);updateVoiceIcon();if(!voiceEnabled)stopVoice();toast(voiceEnabled?'Coach de voz ativado.':'Coach de voz silenciado.');});
   $('listen-daily').addEventListener('click',()=>speak(todayTip()));
   $('match-form').addEventListener('submit',saveMatch);
+  $('match-mode').addEventListener('change',()=>{
+    const squad=$('match-mode').value==='Contra Squad';
+    $('match-rank').max=squad?'2':'50';
+    $('match-rank').value=squad?'2':'25';
+    document.querySelector('label[for="match-rank"]')?.remove();
+    $('match-rank').parentElement.querySelector('span').textContent=squad?'Resultado: 1 venceu, 2 perdeu':'Colocação';
+  });
   $('pick-image').addEventListener('click',()=>{if(window.AndroidCoach&&AndroidCoach.openMedia)AndroidCoach.openMedia('image');else toast('Abra este aplicativo no Android para importar um arquivo.');});
   $('pick-video').addEventListener('click',()=>{if(window.AndroidCoach&&AndroidCoach.openMedia)AndroidCoach.openMedia('video');else toast('Abra este aplicativo no Android para importar um arquivo.');});
   $('timer-close').addEventListener('click',()=>{stopTimer();toast('Treino interrompido.');});
