@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
+  <meta name="theme-color" content="#070917">
+  <title>FreeFireHelper • Coach de evolução</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="ambient" aria-hidden="true"><i></i><i></i><i></i><div class="mesh"></div></div>
+  <div class="app">
+    <header class="topbar">
+      <div class="brand"><div class="brand-icon"><span>F</span><b>H</b></div><div class="brand-name">FREEFIRE<span>HELPER</span><small>SEU ESPAÇO DE EVOLUÇÃO</small></div></div>
+      <button class="round-button voice-on" id="voice-switch" aria-label="Ligar ou desligar dicas faladas" title="Dicas faladas"><span id="voice-icon"></span><span class="voice-dot"></span></button>
+    </header>
+
+    <main id="main-area">
+      <section class="screen active" id="screen-home">
+        <div class="intro"><div class="eyebrow"><span class="live-dot"></span> COACH PESSOAL · V1.0</div><h1>JOGUE COM<br><em>MAIS CONFIANÇA.</em></h1><p>De partidas difíceis a decisões melhores. Evolução se constrói, uma partida por vez.</p></div>
+        <div class="hero">
+          <div class="hero-noise"></div><div class="hero-lines"></div>
+          <div class="hero-label"><span class="hero-chip">SEU PRÓXIMO NÍVEL</span><span class="sweep-star">✦</span></div>
+          <div class="hero-body"><div><span class="hero-mini">TREINADOR DE PARTIDAS</span><h2>PRONTO PARA<br>EVOLUIR?</h2><p>Analise seu desempenho e encontre seu próximo passo.</p><button class="white-btn" data-tab="analyze">ANALISAR PARTIDA <span>↗</span></button></div>
+          <div class="energy" aria-hidden="true"><div class="energy-halo"></div><div class="energy-halo h2"></div><div class="energy-core"><span>FH</span><small>LEVEL UP</small></div><div class="orbit-dot"></div></div></div>
+          <div class="hero-foot"><span>● SEM TRAPAÇAS</span><span>◈ 100% TREINO</span><span>◆ OFFLINE</span></div>
+        </div>
+        <div class="section-title"><div><span>SEU PAINEL</span><h2>Um passo à frente</h2></div><span class="muted-label">DADOS LOCAIS</span></div>
+        <div class="dashboard-grid">
+          <div class="metric metric-large"><span class="metric-tag">PARTIDAS REGISTRADAS</span><div class="metric-value" id="home-matches">0</div><span class="metric-trend" id="home-trend">Seu progresso começa aqui</span><div class="metric-streak"></div></div>
+          <div class="metric"><span class="metric-icon cyan">✦</span><span class="metric-tag">TOP 10</span><div class="metric-value" id="home-top">0%</div><div class="metric-sub">das partidas</div></div>
+          <div class="metric"><span class="metric-icon purple">⌁</span><span class="metric-tag">MÉDIA DE ELIMINAÇÕES</span><div class="metric-value" id="home-kills">—</div><div class="metric-sub">por partida</div></div>
+        </div>
+        <div class="section-title spaced"><div><span>COMECE POR AQUI</span><h2>Ferramentas para evoluir</h2></div></div>
+        <button class="feature-card" data-tab="coach"><div class="feature-glyph purple-bg"><span>◈</span></div><div><strong>Coach de voz</strong><p>Dicas objetivas em português do Brasil.</p></div><span class="forward">↗</span></button>
+        <button class="feature-card" data-tab="training"><div class="feature-glyph turquoise-bg"><span>◎</span></div><div><strong>Centro de treinamento</strong><p>Rotinas para visão de jogo e posicionamento.</p></div><span class="forward">↗</span></button>
+        <div class="tip-panel"><div class="tip-heading"><span class="tip-icon">✧</span><strong>DICA DO DIA</strong><span>DO COACH</span></div><p id="daily-tip">Não se cobre por perder contra jogadores reais. Avalie uma decisão por vez.</p><button id="listen-daily" class="text-link">OUVIR DICA <span>▶</span></button></div>
+      </section>
+
+      <section class="screen" id="screen-analyze">
+        <div class="page-heading"><span class="eyebrow">ANÁLISE DE JOGO</span><h1>Entenda sua<br><em>próxima vitória.</em></h1><p>Escolha um arquivo depois da partida, ou registre seus resultados. Seus arquivos não saem do aparelho.</p></div>
+        <div class="section-title compact"><div><span>01 / VISÃO DE JOGO</span><h2>Importar captura</h2></div></div>
+        <div class="import-grid"><button class="import-card" id="pick-image"><span class="import-glyph">▣</span><strong>PRINT DA TELA</strong><small>Análise de texto na imagem</small><span class="import-arrow">↗</span></button><button class="import-card" id="pick-video"><span class="import-glyph alt">▷</span><strong>VÍDEO SALVO</strong><small>Amostra de 4 quadros</small><span class="import-arrow">↗</span></button></div>
+        <p class="hint">O reconhecimento de texto não identifica inimigos nem entende todas as ações do vídeo. As sugestões são aproximadas.</p>
+        <div id="vision-status" class="vision-status hidden"><div class="loader"></div><span>Analisando localmente...</span></div>
+        <div id="vision-result" class="vision-result hidden"></div>
+        <div class="section-title spaced"><div><span>02 / DESEMPENHO</span><h2>Registrar partida</h2></div></div>
+        <form id="match-form" class="match-form">
+          <label class="field"><span>Modo jogado</span><select id="match-mode"><option value="Battle Royale">Battle Royale</option><option value="Contra Squad">Contra Squad</option><option value="Treino">Treino</option></select></label>
+          <div class="form-grid"><label class="field"><span>Eliminações</span><input id="match-kills" type="number" inputmode="numeric" min="0" max="99" value="0" required></label><label class="field"><span>Colocação</span><input id="match-rank" type="number" inputmode="numeric" min="1" max="50" value="25" required></label><label class="field"><span>Sobrevivência (min)</span><input id="match-minutes" type="number" inputmode="decimal" step="0.5" min="0" max="60" value="5" required></label><label class="field"><span>Como terminou?</span><select id="match-outcome"><option value="surpresa">Fui surpreendido</option><option value="exposto">Fiquei exposto</option><option value="zona">Errei o tempo da zona</option><option value="decisao">Decisão apressada</option><option value="normal">Outro / não sei</option><option value="vitoria">Vitória</option></select></label></div>
+          <button type="submit" class="primary-btn"><span>ANALISAR MEU RESULTADO</span><span>↗</span></button>
+        </form>
+        <div id="match-analysis" class="match-analysis hidden"></div>
+      </section>
+
+      <section class="screen" id="screen-training">
+        <div class="page-heading"><span class="eyebrow">CENTRO DE TREINO</span><h1>TREINO COM<br><em>PROPÓSITO.</em></h1><p>Pequenas sessões para treinar observação, rota, calma e trabalho em equipe.</p></div>
+        <div class="level-card"><div><span class="level-kicker">MISSÃO PESSOAL</span><strong id="train-total">0 SESSÕES</strong><small>Seu progresso, no seu ritmo</small></div><div class="level-emblem">✦</div></div>
+        <div class="section-title spaced"><div><span>ESCOLHA SUA MISSÃO</span><h2>Treinos recomendados</h2></div></div>
+        <div id="drills" class="drill-list"></div>
+        <div class="timer-panel hidden" id="timer-panel"><div class="timer-top"><span class="eyebrow">SESSÃO EM ANDAMENTO</span><button class="close-button" id="timer-close">✕</button></div><h2 id="timer-title">Treinamento</h2><div class="timer-ring"><div class="timer-inner"><span id="timer-clock">01:30</span><small>FOCO TOTAL</small></div></div><p id="timer-instruction"></p><div class="timer-actions"><button id="timer-toggle" class="primary-btn">PAUSAR</button><button id="timer-reset" class="subtle-btn">REINICIAR</button></div></div>
+      </section>
+
+      <section class="screen" id="screen-stats">
+        <div class="page-heading"><span class="eyebrow">MEU HISTÓRICO</span><h1>CADA PARTIDA<br><em>CONTA.</em></h1><p>Veja números reais das partidas que você registrou. Evolução é consistência, não perfeição.</p></div>
+        <div class="summary-grid"><div class="summary-tile"><small>PARTIDAS</small><strong id="stat-games">0</strong></div><div class="summary-tile"><small>TOP 10</small><strong id="stat-top">0%</strong></div><div class="summary-tile"><small>MÉDIA DE TEMPO</small><strong id="stat-time">—</strong></div><div class="summary-tile"><small>ELIMINAÇÕES</small><strong id="stat-kills">0</strong></div></div>
+        <div class="chart-card"><div class="chart-head"><div><span class="eyebrow">EVOLUÇÃO</span><h2>Últimas partidas</h2></div><small>COLOCAÇÃO</small></div><div id="stats-chart" class="stats-chart"></div><p class="chart-note">Quanto menor a colocação numérica, melhor o resultado. Gráfico ilustrado a partir dos registros.</p></div>
+        <div class="section-title spaced"><div><span>SEU DIÁRIO</span><h2>Partidas recentes</h2></div><button class="small-link" id="export-history">EXPORTAR</button></div>
+        <div id="match-history" class="history-list"></div>
+        <button class="danger-link" id="clear-history">Apagar histórico local</button>
+      </section>
+
+      <section class="screen" id="screen-coach">
+        <div class="page-heading"><span class="eyebrow">MENTOR DE PARTIDA</span><h1>UMA DICA.<br><em>UMA EVOLUÇÃO.</em></h1><p>Escolha a situação que mais te desafia. Toque no alto-falante para escutar o treinador.</p></div>
+        <div class="coach-banner"><div class="soundwaves"><i></i><i></i><i></i><i></i><i></i></div><div><span>COACH DE VOZ · PT-BR</span><strong>DICAS QUE FAZEM SENTIDO</strong><small>Sem comandos no jogo. Só aprendizado.</small></div></div>
+        <div id="coach-filters" class="coach-filters"></div>
+        <div id="coach-tips" class="coach-list"></div>
+        <div class="coach-footer"><strong>JOGUE LIMPO, EVOLUA DE VERDADE.</strong><p>FreeFireHelper é um projeto independente e não é afiliado à Garena.</p></div>
+      </section>
+    </main>
+
+    <nav class="bottom-nav" aria-label="Navegação principal">
+      <button class="nav-item active" data-tab="home"><span class="nav-icon">⌂</span><span>INÍCIO</span></button>
+      <button class="nav-item" data-tab="analyze"><span class="nav-icon">▣</span><span>ANÁLISE</span></button>
+      <button class="nav-item" data-tab="training"><span class="nav-icon">◎</span><span>TREINO</span></button>
+      <button class="nav-item" data-tab="stats"><span class="nav-icon">▥</span><span>DADOS</span></button>
+      <button class="nav-item" data-tab="coach"><span class="nav-icon">♫</span><span>COACH</span></button>
+    </nav>
+  </div>
+  <div id="toast" role="status" aria-live="polite"></div>
+  <div class="dialog-backdrop hidden" id="confirm-dialog"><div class="dialog"><div class="dialog-star">✧</div><h2>Apagar histórico?</h2><p>Todos os registros de partidas serão excluídos deste dispositivo. Não é possível desfazer.</p><div><button id="dialog-cancel" class="subtle-btn">CANCELAR</button><button id="dialog-confirm" class="primary-btn">APAGAR</button></div></div></div>
+  <script src="app.js"></script>
+</body>
+</html>
