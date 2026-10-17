@@ -112,6 +112,21 @@ public class MainActivity extends Activity {
             });
         }
 
+        @JavascriptInterface public void shareHistory(String csv) {
+            if (csv == null || csv.trim().isEmpty()) return;
+            runOnUiThread(() -> {
+                try {
+                    Intent send = new Intent(Intent.ACTION_SEND);
+                    send.setType("text/plain");
+                    send.putExtra(Intent.EXTRA_SUBJECT, "Histórico FreeFireHelper");
+                    send.putExtra(Intent.EXTRA_TEXT, csv);
+                    startActivity(Intent.createChooser(send, "Compartilhar histórico CSV"));
+                } catch (Exception e) {
+                    notifyError("Nenhum aplicativo disponível para compartilhar o histórico.");
+                }
+            });
+        }
+
         @JavascriptInterface public void closeApp() {
             runOnUiThread(() -> finish());
         }
